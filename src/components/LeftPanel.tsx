@@ -1,4 +1,9 @@
-import { BodyText, Button, ButtonVariant, ChevronDownIcon, LabelText } from "@dooph-software/design-system";
+import {
+  BodyText,
+  Button,
+  ButtonVariant,
+  LabelText,
+} from "@dooph-software/design-system";
 import { useState } from "react";
 import { CHAR_SET } from "../store";
 import type { Project, WeightDef } from "../types";
@@ -46,18 +51,9 @@ export default function LeftPanel({ project, onProjectChange }: Props) {
             const isOpen = expandedWeights[weightName] ?? false;
             return (
               <div key={weightName} className="weight-group">
-                <div
-                  className={`weight-group-header${project.activeWeight === weightName ? " active" : ""}`}
-                  onClick={() => toggleWeight(weightName)}
-                  role="button"
-                  aria-expanded={isOpen}
-                >
-                  <LabelText>{weightName} ({weight.def.value})</LabelText>
-                  <ChevronDownIcon
-                    className={`weight-group-chevron${isOpen ? " open" : ""}`}
-                    size="16px"
-                  />
-                </div>
+                <LabelText>
+                  {weightName} ({weight.def.value})
+                </LabelText>
 
                 {isOpen && (
                   <div className="char-grid" style={{ marginTop: 4 }}>
