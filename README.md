@@ -5,6 +5,8 @@
   <img src="./public/wordmark-dark.svg" alt="dooph." width="200">
 </picture>
 
+## Use for free at github pages! (font-foundry-dooph.net)[font-foundry.dooph.net]
+
 A dead simple browser-based tool for turning SVG glyph exports from Figma into installable OTF font files. No backend, no server, no AI — everything runs in the browser on localhost (or on our free github pages site!).
 
 This is a read-only publication of the font creation software we use at dooph. Licensed with MIT. Usage of this repo and site never grants you access or rights to dooph intellectual property including but not limited to the trade name 'Dooph LLC', brand name 'dooph.', the wordmark and logomark, and anything else reasonably attributed to the brand.
