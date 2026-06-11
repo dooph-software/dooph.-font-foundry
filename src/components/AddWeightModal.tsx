@@ -59,8 +59,8 @@ export default function AddWeightModal({
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalPortal>
         <ModalOverlay />
-        <ModalContent className="modal-narrow">
-          <div className="modal-padded">
+        <ModalContent className="min-w-[600px]">
+          <div className="p-md">
             <ModalTitle>Add Weight</ModalTitle>
             <ModalDescription className="sr-only">
               Add a new font weight to the project by selecting a preset or
@@ -68,10 +68,10 @@ export default function AddWeightModal({
             </ModalDescription>
           </div>
 
-          <form onSubmit={handleSubmit} className="modal-body">
-            <div className="modal-field">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-md">
+            <div className="flex flex-col gap-xs px-md">
               <LabelText>Presets</LabelText>
-              <div className="preset-row">
+              <div className="flex flex-wrap gap-[6px]">
                 {WEIGHT_PRESETS.map((p) => (
                   <Button
                     variant={ButtonVariant.secondary}
@@ -83,7 +83,7 @@ export default function AddWeightModal({
               </div>
             </div>
 
-            <div className="modal-field">
+            <div className="flex flex-col gap-xs px-md">
               <label htmlFor="weight-name">
                 <LabelText>Weight Name</LabelText>
               </label>
@@ -95,7 +95,7 @@ export default function AddWeightModal({
               />
             </div>
 
-            <div className="modal-field">
+            <div className="flex flex-col gap-xs px-md">
               <label htmlFor="weight-value">
                 <LabelText>Weight Value (100–900)</LabelText>
               </label>
@@ -111,7 +111,7 @@ export default function AddWeightModal({
               />
             </div>
 
-            <div className="modal-footer">
+            <div className="flex justify-end gap-xs mt-sm p-rg border-t border-border">
               <ModalClose asChild>
                 <Button type="button" variant={ButtonVariant.ghost}>
                   Cancel

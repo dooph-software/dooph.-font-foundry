@@ -1,8 +1,6 @@
 import {
-  BodyText,
   Button,
   ButtonVariant,
-  LabelText,
   Modal,
   ModalClose,
   ModalContent,
@@ -70,39 +68,30 @@ export default function ExportModal({
       <ModalPortal>
         <ModalOverlay />
         <ModalContent>
-          <div className="modal-padded">
-            <ModalTitle>Export</ModalTitle>
-            <ModalDescription className="sr-only">
-              Choose how to export your font project.
+          <div className="p-md flex flex-col text-primary gap-xs">
+            <ModalTitle>Export Font Project</ModalTitle>
+            <ModalDescription>
+              Save your font project to a file to continue later or export to a
+              .otf file.
             </ModalDescription>
           </div>
 
-          <div className="modal-body">
-            <button className="export-option" onClick={handleExportOTF}>
-              <div className="export-option-text">
-                <LabelText as="div" className="export-option-title">
-                  Export OTF
-                </LabelText>
-                <BodyText as="div" className="export-option-desc">
-                  Download one .otf file per weight using the current glyph
-                  data.
-                </BodyText>
-              </div>
-            </button>
-
-            <button className="export-option" onClick={handleSaveProgress}>
-              <div className="export-option-text">
-                <LabelText as="div" className="export-option-title">
-                  Save Progress
-                </LabelText>
-                <BodyText as="div" className="export-option-desc">
-                  Save the full project to a .{PROJECT_FILE_NAME} file to
-                  continue later.
-                </BodyText>
-              </div>
-            </button>
-
-            <div className="modal-footer">
+          <div className="flex flex-col gap-md">
+            <div className="flex flex-row px-md w-full gap-xs">
+              <Button
+                variant={ButtonVariant.secondary}
+                onClick={handleExportOTF}
+              >
+                Export OTF
+              </Button>
+              <Button
+                variant={ButtonVariant.secondary}
+                onClick={handleSaveProgress}
+              >
+                Export project file
+              </Button>
+            </div>
+            <div className="flex justify-end gap-xs mt-sm p-rg border-t border-border">
               <ModalClose asChild>
                 <Button variant={ButtonVariant.ghost}>Cancel</Button>
               </ModalClose>

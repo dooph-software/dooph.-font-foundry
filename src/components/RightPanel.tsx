@@ -1,18 +1,24 @@
 import {
+  BaseText,
+  BodyText,
   Button,
   ButtonSize,
   ButtonVariant,
+  IconSize,
+  InfoIcon,
   Input,
   LabelText,
-  BodyText,
-  PlaceholderIcon,
+  TextFontFamily,
+  TextFontSize,
+  TextFontWeight,
+  ToastTypes,
   Tooltip,
-  TooltipTrigger,
-  TooltipProvider,
+  TooltipBody,
   TooltipContent,
   TooltipTitle,
-  TooltipBody,
+  TooltipTrigger,
   TooltipTypes,
+  useToast,
 } from "@dooph-software/design-system";
 import { useRef, useState } from "react";
 import { processFigmaSVG } from "../svgPipeline";
@@ -38,15 +44,18 @@ export default function RightPanel({ project, onProjectChange }: Props) {
   const [kernOpen, setKernOpen] = useState(false);
   const [pipelineError, setPipelineError] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   // Sync advance width when selection changes
   const prevKey = useRef("");
   const currentKey = `${activeWeight}:${activeChar}`;
   if (prevKey.current !== currentKey) {
     prevKey.current = currentKey;
-    setSvgInput("");
+    setSvgInput(glyph?.svgSource ?? "");
     setPipelineError("");
-    setAdvanceWidth(String(glyph?.advanceWidth ?? defaultAdvanceWidth(activeChar ?? "")));
+    setAdvanceWidth(
+      String(glyph?.advanceWidth ?? defaultAdvanceWidth(activeChar ?? "")),
+    );
   }
 
   function parseSVGInput(raw: string) {
@@ -57,14 +66,17 @@ export default function RightPanel({ project, onProjectChange }: Props) {
       const aw = parseInt(advanceWidth, 10) || 600;
       setSvgInput(trimmed);
       setPipelineError("");
-      commitGlyph(pathData, aw);
+      commitGlyph(pathData, aw, trimmed);
+      toast({ title: "Glyph saved", variant: ToastTypes.brand });
     } catch (err) {
+      toast({ title: "Error parsing SVG", variant: ToastTypes.error });
       setPipelineError(err instanceof Error ? err.message : String(err));
     }
   }
 
-  function commitGlyph(pathData: string, aw: number) {
+  function commitGlyph(pathData: string, aw: number, svgSource?: string) {
     if (!activeChar || !activeWeight) return;
+    const existing = project.weights[activeWeight].glyphs[activeChar];
     onProjectChange({
       ...project,
       weights: {
@@ -73,7 +85,11 @@ export default function RightPanel({ project, onProjectChange }: Props) {
           ...project.weights[activeWeight],
           glyphs: {
             ...project.weights[activeWeight].glyphs,
-            [activeChar]: { svgPathData: pathData, advanceWidth: aw },
+            [activeChar]: {
+              svgPathData: pathData,
+              advanceWidth: aw,
+              svgSource: svgSource ?? existing?.svgSource,
+            },
           },
         },
       },
@@ -92,6 +108,7 @@ export default function RightPanel({ project, onProjectChange }: Props) {
     } else if (glyph) {
       // No new SVG — just update the advance width on the existing glyph
       commitGlyph(glyph.svgPathData, aw);
+      toast({ title: "Glyph saved" });
     }
   }
 
@@ -132,10 +149,12 @@ export default function RightPanel({ project, onProjectChange }: Props) {
 
   if (!activeChar || !weight) {
     return (
-      <div className="panel-right">
-        <div className="glyph-editor">
-          <div className="glyph-editor-empty">
-            <BodyText>Select a character from the left panel to begin editing</BodyText>
+      <div className="flex-1 flex flex-col overflow-hidden bg-surface-page">
+        <div className="flex-1 flex flex-col items-center overflow-hidden">
+          <div className="flex-1 w-full flex items-center justify-center text-text-tertiary">
+            <BodyText>
+              Select a character from the left panel to begin editing
+            </BodyText>
           </div>
         </div>
       </div>
@@ -148,30 +167,37 @@ export default function RightPanel({ project, onProjectChange }: Props) {
       : `${activeChar} — U+${activeChar.codePointAt(0)!.toString(16).toUpperCase().padStart(4, "0")}`;
 
   return (
-    <div className="panel-right">
-      <div className="glyph-editor">
-        <div className="glyph-editor-content">
+    <div className="flex-1 flex flex-col overflow-hidden bg-surface-page">
+      <div className="flex-1 flex flex-col items-center overflow-hidden">
+        <div className="flex-1 flex flex-col w-full max-w-[1000px] p-lg gap-md overflow-hidden">
           {/* Character label */}
-          <LabelText>{charLabel} · {activeWeight}</LabelText>
+          <BodyText>
+            {charLabel} · {activeWeight}
+          </BodyText>
 
           {/* Ghost / SVG preview */}
-          <div className="glyph-preview-area">
+          <div className="relative flex-1 min-h-0 flex items-center justify-center rounded-standard border border-border bg-surface overflow-hidden">
             {glyph?.svgPathData ? (
               <GlyphSVGPreview
                 pathData={glyph.svgPathData}
                 advanceWidth={parseInt(advanceWidth, 10) || 600}
               />
             ) : (
-              <span className="glyph-ghost-char" aria-hidden="true">
+              <BaseText
+                fontFamily={TextFontFamily.sans}
+                fontSize={TextFontSize.hero}
+                fontWeight={TextFontWeight.bold}
+                className="text-[160px] leading-none text-text-tertiary select-none pointer-events-none"
+              >
                 {activeChar === " " ? "" : activeChar}
-              </span>
+              </BaseText>
             )}
           </div>
 
           {/* SVG upload / paste area */}
-          <div className="glyph-controls">
+          <div className="flex flex-col gap-sm">
             <div
-              className={`svg-drop-zone${dragOver ? " drag-over" : ""}`}
+              className={`relative border-2 border-dashed border-border rounded-standard p-md text-center [transition:border-color_120ms,background_120ms] cursor-pointer hover:border-border-focus hover:bg-ghost-hover${dragOver ? " border-border-focus bg-ghost-hover" : ""}`}
               onDragOver={(e) => {
                 e.preventDefault();
                 setDragOver(true);
@@ -180,10 +206,11 @@ export default function RightPanel({ project, onProjectChange }: Props) {
               onDrop={handleDrop}
               onClick={() => fileRef.current?.click()}
             >
-              <LabelText style={{ marginBottom: 8, display: 'block' }}>
+              <BodyText style={{ marginBottom: 8, display: "block" }}>
                 Drop SVG file or paste SVG code below · Click to browse
-              </LabelText>
+              </BodyText>
               <textarea
+                className="w-full min-h-[80px] resize-y font-mono text-xs border-none bg-transparent text-text outline-none"
                 placeholder='<svg viewBox="0 0 100 100" ...>...</svg>'
                 value={svgInput}
                 onChange={(e) => setSvgInput(e.target.value)}
@@ -211,32 +238,41 @@ export default function RightPanel({ project, onProjectChange }: Props) {
             </div>
 
             {pipelineError && (
-              <LabelText className="text-destructive">⚠ {pipelineError}</LabelText>
+              <BodyText className="text-text-destructive">
+                ⚠ {pipelineError}
+              </BodyText>
             )}
 
             {/* Bottom row: advance width left, kerning + save right */}
-            <div className="glyph-controls-bottom">
-              <div className="glyph-controls-left">
-                <LabelText>Advance Width</LabelText>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant={ButtonVariant.ghost}
-                        size={ButtonSize.iconSm}
-                        aria-label="About advance width"
-                      >
-                        <PlaceholderIcon size="16px" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent variant={TooltipTypes.rich}>
-                      <TooltipTitle>Advance width</TooltipTitle>
-                      <TooltipBody>
-                        The total horizontal space reserved for this character — the glyph itself plus its side breathing room. Narrow characters like "i" need less; wide ones like "M" need more. Adjust it if characters look too cramped or too spaced out next to each other.
-                      </TooltipBody>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+            <div className="flex items-center justify-between gap-sm shrink-0">
+              <div className="flex items-center gap-xs">
+                <BodyText>Advance Width</BodyText>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={ButtonVariant.ghost}
+                      size={ButtonSize.icon}
+                      aria-label="About advance width"
+                    >
+                      <InfoIcon size={IconSize.medium} />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    variant={TooltipTypes.rich}
+                    className="max-w-[300px]"
+                  >
+                    <TooltipTitle>Advance width</TooltipTitle>
+                    <TooltipBody>
+                      <BodyText>
+                        The total horizontal space reserved for this character —
+                        the glyph itself plus its side breathing room. Narrow
+                        characters like "i" need less; wide ones like "M" need
+                        more. Adjust it if characters look too cramped or too
+                        spaced out next to each other.
+                      </BodyText>
+                    </TooltipBody>
+                  </TooltipContent>
+                </Tooltip>
                 <Input
                   type="number"
                   min={0}
@@ -247,14 +283,18 @@ export default function RightPanel({ project, onProjectChange }: Props) {
                 />
                 <LabelText>units</LabelText>
               </div>
-              <div className="glyph-controls-right">
+              <div className="flex items-center gap-xs">
                 <Button
                   variant={ButtonVariant.ghost}
                   onClick={() => setKernOpen(true)}
                 >
                   Kerning
                 </Button>
-                <Button variant={ButtonVariant.brand} onClick={handleSaveGlyph}>
+                <Button
+                  variant={ButtonVariant.brand}
+                  onClick={handleSaveGlyph}
+                  disabled={!glyph?.svgPathData}
+                >
                   Save Glyph
                 </Button>
               </div>
@@ -306,7 +346,7 @@ function GlyphSVGPreview({
       width="100%"
       height="100%"
       preserveAspectRatio="xMidYMid meet"
-      className="glyph-svg-preview"
+      className="w-full h-full"
       aria-hidden="true"
     >
       {/* Baseline at svgY=700 */}

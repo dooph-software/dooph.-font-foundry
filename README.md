@@ -1,4 +1,9 @@
-# dooph Font Foundry
+# dooph. font foundry
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./public/wordmark-light.svg">
+  <img src="./public/wordmark-dark.svg" alt="dooph." width="200">
+</picture>
 
 A dead simple browser-based tool for turning SVG glyph exports from Figma into installable OTF font files. No backend, no server, no AI — everything runs in the browser on localhost (or on our free github pages site!).
 

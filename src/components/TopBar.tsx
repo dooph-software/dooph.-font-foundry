@@ -41,24 +41,23 @@ export default function TopBar({ project, onProjectChange }: Props) {
   }
 
   return (
-    <header className="app-topbar">
-      <div className="app-topbar-left">
-        <picture>
-          <source
-            srcSet="/wordmark-dark.svg"
-            media="(prefers-color-scheme: dark)"
-          />
-          <img
-            src="/wordmark-light.svg"
-            alt="dooph Font Foundry"
-            className="app-topbar-logo"
-          />
-        </picture>
+    <header className="shrink-0 flex items-center justify-between pl-md pr-sm py-sm border-b border-border bg-page-surface gap-sm">
+      <div className="flex items-center gap-sm">
+        <img
+          src="/wordmark-dark.svg"
+          alt="dooph Font Foundry"
+          className="h-4 w-auto block dark:hidden"
+        />
+        <img
+          src="/wordmark-light.svg"
+          alt="dooph Font Foundry"
+          className="h-4 w-auto hidden dark:block"
+        />
       </div>
 
       <BodyText>{project.metadata.familyName}</BodyText>
 
-      <div className="app-topbar-right">
+      <div className="flex items-center gap-xs">
         <Button variant={ButtonVariant.secondary} onClick={handleOpenProject}>
           Open Project
         </Button>

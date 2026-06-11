@@ -14,6 +14,7 @@ export type FontMetadata = {
 export type GlyphData = {
   svgPathData: string;
   advanceWidth: number;
+  svgSource?: string;
 };
 
 export type WeightEntry = {

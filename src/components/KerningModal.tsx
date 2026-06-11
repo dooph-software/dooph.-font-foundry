@@ -1,19 +1,21 @@
-import { useState } from 'react';
 import {
+  BodyText,
   Button,
   ButtonVariant,
-  Modal,
-  ModalPortal,
-  ModalOverlay,
-  ModalContent,
-  ModalTitle,
-  ModalDescription,
-  ModalClose,
   Input,
   LabelText,
-} from '@dooph-software/design-system';
-import type { WeightEntry } from '../types';
-import { CHAR_SET } from '../store';
+  Modal,
+  ModalClose,
+  ModalContent,
+  ModalDescription,
+  ModalOverlay,
+  ModalPortal,
+  ModalTitle,
+  cn,
+} from "@dooph-software/design-system";
+import { useState } from "react";
+import { CHAR_SET } from "../store";
+import type { WeightEntry } from "../types";
 
 type Props = {
   open: boolean;
@@ -23,9 +25,15 @@ type Props = {
   onSave: (pair: string, value: number) => void;
 };
 
-export default function KerningModal({ open, onOpenChange, activeChar, weight, onSave }: Props) {
+export default function KerningModal({
+  open,
+  onOpenChange,
+  activeChar,
+  weight,
+  onSave,
+}: Props) {
   const [targetChar, setTargetChar] = useState<string | null>(null);
-  const [kernValue, setKernValue] = useState('0');
+  const [kernValue, setKernValue] = useState("0");
 
   function handleCharClick(char: string) {
     setTargetChar(char);
@@ -36,7 +44,7 @@ export default function KerningModal({ open, onOpenChange, activeChar, weight, o
   function handleSave() {
     if (!targetChar) return;
     const val = parseInt(kernValue, 10);
-    if (isNaN(val)) return alert('Enter a valid integer.');
+    if (isNaN(val)) return alert("Enter a valid integer.");
     onSave(activeChar + targetChar, val);
     onOpenChange(false);
   }
@@ -45,36 +53,52 @@ export default function KerningModal({ open, onOpenChange, activeChar, weight, o
     <Modal open={open} onOpenChange={onOpenChange}>
       <ModalPortal>
         <ModalOverlay />
-        <ModalContent className="modal-narrow">
-          <div className="modal-padded">
+        <ModalContent className="min-w-[600px] flex flex-col gap-sm">
+          <div className="p-md flex flex-col gap-sm">
             <ModalTitle>Kerning — "{activeChar}"</ModalTitle>
-            <ModalDescription className="sr-only">
-              Set the kerning adjustment in font units between this character and a right-hand character.
+            <ModalDescription className="text-primary">
+              Set the kerning adjustment in font units between this character
+              and a right-hand character.
             </ModalDescription>
           </div>
 
-          <div className="modal-body">
-            <div className="modal-field">
+          <div className="flex flex-col gap-sm">
+            <div className="flex flex-col gap-rg px-md">
               <LabelText>Select right character</LabelText>
-              <div className="kern-char-grid">
-                {CHAR_SET.map((char) => (
-                  <button
-                    key={char}
-                    type="button"
-                    className={`kern-char-tile${targetChar === char ? ' selected' : ''}`}
-                    onClick={() => handleCharClick(char)}
-                    title={char === ' ' ? 'Space' : char}
-                  >
-                    <LabelText>{char === ' ' ? '⎵' : char}</LabelText>
-                  </button>
-                ))}
+              <div className="grid grid-cols-[repeat(auto-fill,minmax(32px,1fr))] gap-1 max-h-[280px] overflow-y-auto border border-border rounded-standard p-sm">
+                {CHAR_SET.map((char) => {
+                  const targetSelected = targetChar === char;
+
+                  return (
+                    <button
+                      key={char}
+                      type="button"
+                      className={cn(
+                        "aspect-square flex items-center justify-center rounded-tight border border-transparent cursor-pointer text-text-secondary [transition:background_80ms] hover:bg-ghost-hover hover:text-text",
+                        targetSelected &&
+                          "bg-primary text-primary-fg border-primary hover:bg-primary-hover hover:text-primary-fg-hover",
+                      )}
+                      onClick={() => handleCharClick(char)}
+                      title={char === " " ? "Space" : char}
+                    >
+                      <LabelText>{char === " " ? "⎵" : char}</LabelText>
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             {targetChar !== null && (
-              <div className="modal-field">
+              <div className="flex flex-col gap-xs px-md">
                 <label htmlFor="kern-value">
-                  <LabelText>Kern value for "{activeChar}{targetChar}" (font units, negative = tighter)</LabelText>
+                  <BodyText>
+                    Kern value for{" "}
+                    <strong>
+                      "{activeChar}
+                      {targetChar}"
+                    </strong>{" "}
+                    (font units, negative = tighter)
+                  </BodyText>
                 </label>
                 <Input
                   id="kern-value"
@@ -85,7 +109,7 @@ export default function KerningModal({ open, onOpenChange, activeChar, weight, o
               </div>
             )}
 
-            <div className="modal-footer">
+            <div className="flex justify-end gap-xs mt-sm p-rg border-t border-border">
               <ModalClose asChild>
                 <Button variant={ButtonVariant.ghost}>Cancel</Button>
               </ModalClose>
