@@ -1,6 +1,10 @@
 # dooph Font Foundry
 
-A browser-based tool for turning SVG glyph exports from Figma into installable OTF font files. No backend, no server, no AI — everything runs in the browser on localhost.
+A dead simple browser-based tool for turning SVG glyph exports from Figma into installable OTF font files. No backend, no server, no AI — everything runs in the browser on localhost (or on our free github pages site!).
+
+This is a read-only publication of the font creation software we use at dooph. Licensed with MIT. Usage of this repo and site never grants you access or rights to dooph intellectual property including but not limited to the trade name 'Dooph LLC', brand name 'dooph.', the wordmark and logomark, and anything else reasonably attributed to the brand.
+
+Feel free to fork but attribute according to the license defined in `LICENSE`
 
 ## Quick start
 
@@ -28,6 +32,7 @@ To pause and return: Export → Save Progress writes a `.fontproject.json` file.
 Each font family starts with a single **Regular (400)** weight. Add as many weights as you like via the Add Weight button — each gets its own glyph set and produces a separate OTF file on export. All weights share the same family name, which is what makes them show up as one family with selectable weights in applications.
 
 **Character set** (95 glyphs per weight):
+
 - Uppercase A–Z, lowercase a–z
 - Digits 0–9
 - ASCII punctuation and symbols
@@ -37,11 +42,11 @@ Each font family starts with a single **Regular (400)** weight. Add as many weig
 
 ## Dependencies and why they were chosen
 
-| Package | Version | Role |
-|---|---|---|
-| `opentype.js` | 2.0.0 | Builds and serializes OTF font files in the browser without any native code. Handles the CFF outline format natively, so Figma's cubic bezier paths are used as-is without quadratic conversion. |
-| `svgpath` | 2.6.0 | Flattens nested `<g transform>` matrices into path coordinates, converts arcs to beziers, normalizes relative/smooth commands to absolute. Keeps all SVG math out of application code. |
-| `@dooph-software/design-system` | ^1.0.4 | Token-driven React component library. Provides buttons, inputs, modals, and the full visual language — no one-off UI written by hand. |
+| Package                         | Version | Role                                                                                                                                                                                             |
+| ------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `opentype.js`                   | 2.0.0   | Builds and serializes OTF font files in the browser without any native code. Handles the CFF outline format natively, so Figma's cubic bezier paths are used as-is without quadratic conversion. |
+| `svgpath`                       | 2.6.0   | Flattens nested `<g transform>` matrices into path coordinates, converts arcs to beziers, normalizes relative/smooth commands to absolute. Keeps all SVG math out of application code.           |
+| `@dooph-software/design-system` | ^1.0.4  | Token-driven React component library. Provides buttons, inputs, modals, and the full visual language — no one-off UI written by hand.                                                            |
 
 ## Key decisions
 
