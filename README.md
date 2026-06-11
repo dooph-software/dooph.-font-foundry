@@ -1,5 +1,3 @@
-# dooph. font foundry
-
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="./public/wordmark-light.svg">
   <img src="./public/wordmark-dark.svg" alt="dooph." width="200">
